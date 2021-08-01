@@ -33,17 +33,18 @@ def load_data() -> dict:
 
 
 def save_data(data: dict):
+    # TODO use pickle
     saved = json.dumps(data, cls=EnhancedJSONEncoder)
     with open('/home/arielle/friendtracker.json', 'w') as f:
         f.write(saved)
 
 
-def add_hangout(friends: list, date: str, notes: str):
+def add_hangout(friends: list, date: str, description: str):
     data = load_data()
     date = dateparser.parse(date).date().isoformat()
     for friend in friends:
         friend_data = data.setdefault(friend, Friend({}))
-        friend_data.hangs[date] = notes
+        friend_data.hangs[date] = description
     save_data(data)
 
 
@@ -59,16 +60,16 @@ def remove_friend(friend: str):
     save_data(data)
 
 
-def get_hangs(friend_data: dict, lower_date_boundary: datetime):
-    for date, notes in sorted(friend_data.hangs.items()):
-        if dateparser.parse(date).date() >= lower_date_boundary:
-            yield date, notes
+def get_hangs(friend_data: dict, start_date: datetime):
+    for date, description in sorted(friend_data.hangs.items()):
+        if dateparser.parse(date).date() >= start_date:
+            yield date, description
 
 
-def get_recent_hangs(data, friend_filter=None, since='7 days ago') -> dict:
+def get_recent_hangs(data: dict, friend_filter: str, start_date: datetime) -> dict:
     recent_hangs = defaultdict(list)
     for friend in data:
-        for hang in get_hangs(data[friend], dateparser.parse(since).date()):
+        for hang in get_hangs(data[friend], start_date):
             recent_hangs[hang].append(friend)
     if friend_filter:
         recent_hangs = {
@@ -79,7 +80,7 @@ def get_recent_hangs(data, friend_filter=None, since='7 days ago') -> dict:
     return recent_hangs
 
 
-def get_upcoming_hangs(data: dict, friend_filter: str, end: str):
+def get_upcoming_hangs(data: dict, friend_filter: str, end: datetime):
     upcoming_hangs = defaultdict(list)
     overdue_hangs = defaultdict(list)
 
@@ -98,7 +99,7 @@ def get_upcoming_hangs(data: dict, friend_filter: str, end: str):
             continue
         last_hang = dateparser.parse(sorted(friend_data.hangs.keys())[-1]).date()
         next_hang = last_hang + timedelta(days=friend_data.frequency)
-        if next_hang > dateparser.parse(end).date():
+        if next_hang > end:
             continue
 
         if next_hang < today:
@@ -109,36 +110,34 @@ def get_upcoming_hangs(data: dict, friend_filter: str, end: str):
     return overdue_hangs, upcoming_hangs
 
 
-def get_calendar(friend_filter=None):
+def get_calendar(friend_filter: str):
     data = load_data()
 
     if friend_filter:
-        start = sorted(data[friend_filter].hangs.keys())[-3:][0]
-        end = f'in {data[friend_filter].frequency} days'
+        start = dateparser.parse(sorted(data[friend_filter].hangs.keys())[-3:][0]).date()
+        end = dateparser.parse(f'in {data[friend_filter].frequency} days').date()
     else:
-        start = '7 days ago'
-        end = 'in 7 days'
+        start = dateparser.parse('7 days ago').date()
+        end = dateparser.parse('in 7 days').date()
 
     recent_hangs = sorted(get_recent_hangs(data, friend_filter, start).items())
     if recent_hangs:
         yield "Past:"
-    for hang, friends in recent_hangs:
-        date, description = hang
-        yield f"{date}: {description}"
-        for friend in friends:
-            yield f"\t{friend}"
+        for hang, friends in recent_hangs:
+            date, description = hang
+            yield f"\t{date} - {description}: {', '.join(friends)}"
     
     overdue, upcoming = get_upcoming_hangs(data, friend_filter, end)
 
     if overdue:
         yield "Overdue:"
         for date, friends in overdue.items():
-            yield f"{date}: {', '.join(friends)}"
+            yield f"\t{date} - {', '.join(friends)}"
     
     if upcoming:
         yield "Upcoming:"
         for date, friends in upcoming.items():
-            yield f"{date}: {', '.join(friends)}"
+            yield f"\t{date} - {', '.join(friends)}"
 
 
 def main(args=None):
