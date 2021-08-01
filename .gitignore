@@ -1,0 +1,5 @@
+.tox
+.vscode
+.python-version
+__pycache__
+friendtracker.egg-info
