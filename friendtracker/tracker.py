@@ -143,6 +143,8 @@ def get_calendar(friend_filter=None):
 
 def main(args=None):
     parser = argparse.ArgumentParser()
+    parser.set_defaults(cmd = None)
+
     subparsers = parser.add_subparsers(help='sub-command help')
 
     update_parser = subparsers.add_parser('update', help='update a hangout frquency')
@@ -175,3 +177,5 @@ def main(args=None):
     elif args.cmd == 'calendar':
         for output_line in get_calendar(args.friend):
             print(output_line)
+    else:
+        parser.print_help()
