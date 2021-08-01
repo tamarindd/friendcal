@@ -33,8 +33,9 @@ def load_data() -> dict:
 
 
 def save_data(data: dict):
+    saved = json.dumps(data, cls=EnhancedJSONEncoder)
     with open('/home/arielle/friendtracker.json', 'w') as f:
-        f.write(json.dumps(data, cls=EnhancedJSONEncoder))
+        f.write(saved)
 
 
 def add_hangout(friends: list, date: str, notes: str):
@@ -153,13 +154,13 @@ def main(args=None):
     remove_parser.set_defaults(cmd = 'remove')
     remove_parser.add_argument('friend', type=str)
 
-    hangout_parser = subparsers.add_parser('hangout')
+    hangout_parser = subparsers.add_parser('hangout', help='add a recent/future event')
     hangout_parser.set_defaults(cmd = 'hangout')
     hangout_parser.add_argument('date')
     hangout_parser.add_argument('description')
     hangout_parser.add_argument('friends', nargs='+')
 
-    calendar_parser = subparsers.add_parser('calendar')
+    calendar_parser = subparsers.add_parser('calendar', help='check calendar +- 1 week')
     calendar_parser.set_defaults(cmd = 'calendar')
     calendar_parser.add_argument('--friend')
 
