@@ -1,4 +1,5 @@
-dataclasses
 dateparser
+pytest
+dataclasses
 sqlalchemy
 sqlalchemy_utils
