@@ -1,0 +1,47 @@
+{
+    "julia": {
+        "hangs": {
+            "2021-07-26": "birthday",
+            "2021-07-21": "balcony",
+            "2021-08-10": "movies",
+            "2021-08-09": "beers and pizza in the park",
+            "2021-08-08": "brunch",
+            "2021-08-05": "board games",
+            "2021-08-07": "cleaning",
+            "2021-08-15": "birthday",
+            "2021-08-12": "granny's birthday"
+        },
+        "frequency": 7
+    },
+    "kamal": {
+        "hangs": {
+            "2021-07-26": "julias bday",
+            "2021-07-21": "balcony",
+            "2021-08-09": "beers and pizza in the park",
+            "2021-08-08": "brunch",
+            "2021-08-05": "board games",
+            "2021-08-07": "cleaning",
+            "2021-08-15": "birthday"
+        },
+        "frequency": 21
+    },
+    "lori": {
+        "hangs": {
+            "2021-07-24": "housewarming",
+            "2021-07-22": "drinks"
+        },
+        "frequency": 7
+    },
+    "guillaume": {
+        "hangs": {
+            "2021-08-01": "dumplings"
+        },
+        "frequency": 14
+    },
+    "erin": {
+        "hangs": {
+            "2021-07-24": "housewarming"
+        },
+        "frequency": null
+    }
+}
